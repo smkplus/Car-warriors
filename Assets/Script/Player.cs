@@ -5,12 +5,22 @@ using UnityEngine;
 public class Player : MonoBehaviour {
     public float moveSpeed = 5;
     public GameObject bulletPrefab,rocketPrefab,laserObject;
+    public GameObject TNT,SleepPotion;
     private float startTime,nextTime = 2;
     public float delay = 2;
     public Transform shotPos;
     public enum Weapons{Laser,MachineGun,RocketLauncher}
+    public enum Plantings{TNT,SleepPotion}
+    public enum Defensives{Shield,Hidden,Fast,Healthy}
     public Weapons currentWeapon;
+    public Plantings currentPlanting;
+    public Defensives currentDefensive;
+
     public bool isfaceRight;
+    private bool sleep;
+    float h,v;
+
+    public int Health = 100;
 
     void Start(){
 nextTime = delay;
@@ -23,11 +33,14 @@ BulletReloader();
 
 }
 
-float h,v;    
-/// <summary>
-/// حرکت کردن بازیکن
-/// </summary>
-void Movement(){
+
+    /// <summary>
+    /// حرکت کردن بازیکن
+    /// </summary>
+    void Movement(){
+        if(sleep){
+            return;
+        }
 h = Input.GetAxisRaw("Horizontal");    
 v = Input.GetAxisRaw("Vertical");   
 if(h != 0 || v != 0){
@@ -59,6 +72,9 @@ float degree = Mathf.Atan2(-h, v) * (180 / Mathf.PI);
     transform.eulerAngles = rot;
 }
 
+/// <summary>
+/// شلیک کردن
+/// </summary>
 void Shot(){
 GameObject spawn;
     if(currentWeapon == Weapons.MachineGun){
@@ -67,6 +83,22 @@ GameObject spawn;
     spawn = Instantiate(rocketPrefab,shotPos.position,transform.rotation);
     }
 
+
+}
+
+void Plant(){
+    GameObject spawn;
+    if(currentPlanting == Plantings.TNT){
+    spawn = Instantiate(TNT,shotPos.position,transform.rotation);
+    }else if(currentPlanting == Plantings.SleepPotion){
+    spawn = Instantiate(SleepPotion,shotPos.position,transform.rotation);
+    }
+}
+
+public IEnumerator Sleep(float sleepTime){
+    sleep = true;
+    yield return new WaitForSeconds(sleepTime);
+    sleep = false;
 
 }
 
